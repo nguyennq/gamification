@@ -1,0 +1,12 @@
+The implementation of our new Gamification microservice and we will see how to receive events from the existing multiplication microservice,
+ which we just modified.
+ First, let’s take some time to understand the gamification domain model. It consists of the following:
+ • ScoreCard: Models one incremental set of points that a given user gets at a given time.
+ • Badge: An enumeration of all possible badges in the game.
+ • BadgeCard: Represents a badge linked to a certain user, won at a certain time.
+ • LeaderBoardRow: A position in the leaderboard that is the total score together with the user.
+ • GameStats: Score and badges for a given user. It can be used for a given game iteration (one attempt’s result)
+ or for a collection of attempts (aggregating score and badges).
+ There will be two main parts of the code in charge of the business logic of the gamification microservice:
+ • The GameService interface and its implementation GameServiceImpl: Used to calculate score and badges, based on the received attempts.
+ • LeaderBoardService and LeaderBoardServiceImpl: Used to retrieve the top 10 users with the highest score.
