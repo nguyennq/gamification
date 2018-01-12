@@ -21,7 +21,7 @@ public interface ScoreCardRepository extends CrudRepository<ScoreCard, Long> {
      */
     @Query("SELECT SUM(s.userId) FROM vn.nguyen.microservice.gamification.domain.ScoreCard s " +
             "WHERE s.userId = :userId GROUP BY s.userId")
-    int getTotalScoreForUser(@Param("userId") final String userId);
+    int getTotalScoreForUser(@Param("userId") final Long userId);
 
     /**
      * Retrieves a list of {@link LeaderBoardRow}s representing the Leader Board of users and their total score.
