@@ -5,6 +5,9 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import vn.nguyen.microservice.gamification.client.MultiplicationResultAttemptClient;
+import vn.nguyen.microservice.gamification.client.dto.MultiplicationResultAttempt;
 import vn.nguyen.microservice.gamification.domain.Badge;
 import vn.nguyen.microservice.gamification.domain.BadgeCard;
 import vn.nguyen.microservice.gamification.domain.GameStats;
@@ -31,13 +34,15 @@ public class GameServiceImplTest {
     private ScoreCardRepository scoreCardRepository;
     @Mock
     private BadgeCardRepository badgeCardRepository;
+    @Mock
+    private MultiplicationResultAttemptClient resultAttemptClient;
 
     @InjectMocks
     private GameServiceImpl gameServiceImpl;
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        gameServiceImpl = new GameServiceImpl(badgeCardRepository, scoreCardRepository);
+        gameServiceImpl = new GameServiceImpl(badgeCardRepository, scoreCardRepository, resultAttemptClient);
     }
 
     @Test
@@ -52,7 +57,8 @@ public class GameServiceImplTest {
                 willReturn(Collections.singletonList(scoreCard));
         given(badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(scoreCard.getUserId())).
                 willReturn(Collections.emptyList());
-
+        MultiplicationResultAttempt resultAttemptLuckyNumber = preparedMultiplicationResultAttempt("john conner",50,50,true);
+        given(resultAttemptClient.retrieveMultiplicationResultAttemptById(scoreCard.getAttemptId())).willReturn(resultAttemptLuckyNumber);
         //when
         GameStats gameStats = gameServiceImpl.newAttemptForUser(scoreCard.getUserId(), scoreCard.getAttemptId(), true);
         //then
@@ -74,12 +80,20 @@ public class GameServiceImplTest {
         //the first won badge is already there
         given(badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(scoreCard.getUserId())).
                 willReturn(Collections.singletonList(firstWonBadgeCard));
-
+        MultiplicationResultAttempt resultAttemptLuckyNumber = preparedMultiplicationResultAttempt("john conner",50,50,true);
+        given(resultAttemptClient.retrieveMultiplicationResultAttemptById(scoreCard.getAttemptId())).willReturn(resultAttemptLuckyNumber);
         //when
         GameStats gameStats = gameServiceImpl.newAttemptForUser(scoreCard.getUserId(), scoreCard.getAttemptId(), true);
         //then
         assertThat(gameStats.getScore()).isEqualTo(scoreCard.DEFAULT_SCORE);
         assertThat(gameStats.getBadges()).containsOnly(Badge.BRONZE_MULTIPLICATION);
+    }
+
+    private MultiplicationResultAttempt preparedMultiplicationResultAttempt(String userAlias,
+             int multiplicationFactorNumberA, int multiplicationFactorNumberB, boolean correct) {
+        MultiplicationResultAttempt resultAttemptLuckyNumber = new MultiplicationResultAttempt();
+
+        return resultAttemptLuckyNumber;
     }
 
     @Test

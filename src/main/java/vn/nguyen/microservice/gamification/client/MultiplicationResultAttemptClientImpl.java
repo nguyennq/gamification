@@ -2,12 +2,14 @@ package vn.nguyen.microservice.gamification.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import vn.nguyen.microservice.gamification.client.dto.MultiplicationResultAttempt;
 
 /**
  * Created by nals on 1/15/18.
  */
+@Component
 public class MultiplicationResultAttemptClientImpl implements MultiplicationResultAttemptClient {
 
     private final RestTemplate restTemplate;
