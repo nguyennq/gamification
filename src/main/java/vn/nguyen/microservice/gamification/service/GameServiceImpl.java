@@ -1,8 +1,9 @@
 package vn.nguyen.microservice.gamification.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.nguyen.microservice.gamification.client.MultiplicationResultAttemptClient;
+import vn.nguyen.microservice.gamification.client.dto.MultiplicationResultAttempt;
 import vn.nguyen.microservice.gamification.domain.Badge;
 import vn.nguyen.microservice.gamification.domain.BadgeCard;
 import vn.nguyen.microservice.gamification.domain.GameStats;
@@ -22,12 +23,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameServiceImpl implements GameService {
 
+    public static final int LUCKY_NUMBER = 42;
     private BadgeCardRepository badgeCardRepository;
     private ScoreCardRepository scoreCardRepository;
+    private MultiplicationResultAttemptClient resultAttemptClient;
 
-    public GameServiceImpl(BadgeCardRepository badgeCardRepository, ScoreCardRepository scoreCardRepository) {
+    public GameServiceImpl(BadgeCardRepository badgeCardRepository,
+                           ScoreCardRepository scoreCardRepository,
+                           MultiplicationResultAttemptClient resultAttemptClient) {
         this.badgeCardRepository = badgeCardRepository;
         this.scoreCardRepository = scoreCardRepository;
+        this.resultAttemptClient = resultAttemptClient;
     }
 
     @Override
@@ -76,6 +82,17 @@ public class GameServiceImpl implements GameService {
             BadgeCard firstWonBadge = giveBadgeToUser(Badge.FIRST_WON, userId);
             badgeCards.add(firstWonBadge);
         }
+
+        //process Lucky number badge
+        MultiplicationResultAttempt resultAttemptLuckyNumber =
+                resultAttemptClient.retrieveMultiplicationResultAttemptById(attemptId);
+        if(!containsBadge(badgeCardList,Badge.LUCKY_NUMBER) &&
+                (LUCKY_NUMBER == resultAttemptLuckyNumber.getMultiplicationFactorNumberA() ||
+                        LUCKY_NUMBER == resultAttemptLuckyNumber.getMultiplicationFactorNumberB())){
+            BadgeCard luckyNumberBadge = giveBadgeToUser(Badge.LUCKY_NUMBER, userId);
+            badgeCards.add(luckyNumberBadge);
+        }
+
         return badgeCards;
     }
     /**

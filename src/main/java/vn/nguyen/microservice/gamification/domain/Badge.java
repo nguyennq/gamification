@@ -10,5 +10,6 @@ public enum Badge {
     GOLD_MULTIPLICATION,
     //Badge won for different conditions
     FIRST_ATTEMPT,
-    FIRST_WON
+    FIRST_WON,
+    LUCKY_NUMBER
 }
